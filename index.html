@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Life•Glitch</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2212%22 fill=%22%23071126%22/><text x=%2212%22 y=%2242%22 font-size=%2232%22 fill=%22%236ec1ff%22>LG</text></svg>">
+  <style>
+    :root {--bg:#05060a;--text:#e6eef6;--accent:#6ec1ff;--muted:#8899a9;}
+    * {box-sizing:border-box;}
+    body {margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text);}
+    #loader {position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#05060a;z-index:100;}
+    .glow {font-size:1.5rem;color:var(--accent);text-shadow:0 0 10px var(--accent);}
+    .app {max-width:1100px;margin:60px auto;padding:16px;display:none;}
+    textarea,input,select,button {border:none;border-radius:6px;padding:8px;font-size:1rem;}
+    button {background:var(--accent);color:#000;font-weight:600;cursor:pointer;}
+    .grid {display:grid;grid-template-columns:1fr 300px;gap:18px;}
+    .card {background:rgba(255,255,255,0.03);padding:16px;border-radius:12px;}
+    footer {margin-top:24px;display:flex;justify-content:space-between;color:var(--muted);}
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="glow">LG</div>
+    <div style="margin-top:10px;">Life•Glitch Studio</div>
+    <div style="color:var(--muted)">Loading...</div>
+  </div>
+
+  <div class="app" id="app">
+    <h1>Life•Glitch</h1>
+    <div class="grid">
+      <main class="card">
+        <h3>Idea / Glitch Generator</h3>
+        <textarea id="prompt" rows="3" style="width:100%"></textarea><br>
+        <select id="mode">
+          <option value="plan">Action Plan</option>
+          <option value="todo">Checklist</option>
+          <option value="miniapp">Mini App Code</option>
+        </select>
+        <button id="generate">Generate</button>
+        <pre id="output" style="margin-top:10px;white-space:pre-wrap;"></pre>
+      </main>
+      <aside class="card">
+        <h3>Chatbot</h3>
+        <div id="messages" style="height:200px;overflow:auto;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px"></div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <input id="chatInput" style="flex:1" placeholder="Type..." />
+          <button id="send">Send</button>
+        </div>
+        <button id="exportAll" style="margin-top:8px;">Export Notes</button>
+      </aside>
+    </div>
+    <footer>
+      <div>Silent Mode</div>
+      <div>Created by Life•Glitch Studio</div>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded',()=>{
+      setTimeout(()=>{document.getElementById('loader').remove();document.getElementById('app').style.display='block';},1200);
+
+      const out=document.getElementById('output');
+      document.getElementById('generate').onclick=()=>{
+        const text=document.getElementById('prompt').value.trim();
+        const mode=document.getElementById('mode').value;
+        if(!text){out.textContent='Enter something first.';return;}
+        if(mode==='plan') out.textContent='Plan:\\n1. Observe glitch\\n2. Backup\\n3. Rebuild\\nNotes:\\n'+text;
+        else if(mode==='todo') out.textContent='- [ ] Identify issue\\n- [ ] Backup\\n- [ ] Fix small parts\\n'+text;
+        else out.textContent='<html>...<p>'+text+'</p>';
+      };
+
+      const messages=document.getElementById('messages');
+      document.getElementById('send').onclick=()=>{
+        const val=document.getElementById('chatInput').value.trim();
+        if(!val)return;
+        const u=document.createElement('div');u.textContent='You: '+val;messages.appendChild(u);
+        document.getElementById('chatInput').value='';
+        setTimeout(()=>{
+          const r=document.createElement('div');
+          r.textContent='Life•Glitch: Try one small repair first.';
+          messages.appendChild(r);
+          messages.scrollTop=messages.scrollHeight;
+        },400);
+      };
+
+      document.getElementById('exportAll').onclick=()=>{
+        const blob=new Blob([messages.innerText],{type:'text/plain'});
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);
+        a.download='lifeglitch_notes.txt';
+        a.click();
+      };
+    });
+  </script>
+</body>
+</html>
